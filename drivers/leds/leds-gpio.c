@@ -50,7 +50,7 @@ static void gpio_led_set(struct led_classdev *led_cdev,
 		gpiod_direction_input(led_dat->gpiod);
 		led_dat->cdev.flags &= ~SET_GPIO_INPUT;
 	} else if (led_dat->cdev.flags & SET_GPIO_OUTPUT) {
-		gpiod_direction_output(led_dat->gpiod, led_dat->new_level);
+		gpiod_direction_output(led_dat->gpiod, level);
 		led_dat->cdev.flags &= ~SET_GPIO_OUTPUT;
 	} else {
 		if (led_dat->can_sleep ||
