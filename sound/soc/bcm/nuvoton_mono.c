@@ -54,7 +54,7 @@ static struct snd_soc_dai_link snd_rpi_nuvoton_mono_dai[] = {
 	.cpu_dai_name	= "bcm2708-i2s.0",
 	.codec_dai_name	= "wm8510-hifi",
 	.platform_name	= "bcm2708-i2s.0",
-	.codec_name	= "wm8510-codec",
+	.codec_name	= "wm8510.1-001a",
 	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 				SND_SOC_DAIFMT_CBS_CFS,
 	.ops		= &snd_rpi_nuvoton_mono_ops,
@@ -64,7 +64,7 @@ static struct snd_soc_dai_link snd_rpi_nuvoton_mono_dai[] = {
 
 /* audio machine driver */
 static struct snd_soc_card snd_rpi_nuvoton_mono = {
-	.name         = "snd_rpi_nuvoton_mono",
+	.name         = "NuvotonMonoDAC",
 	.dai_link     = snd_rpi_nuvoton_mono_dai,
 	.num_links    = ARRAY_SIZE(snd_rpi_nuvoton_mono_dai),
 };
@@ -76,17 +76,17 @@ static int snd_rpi_nuvoton_mono_probe(struct platform_device *pdev)
 	snd_rpi_nuvoton_mono.dev = &pdev->dev;
 
 	if (pdev->dev.of_node) {
-	    struct device_node *i2s_node;
-	    struct snd_soc_dai_link *dai = &snd_rpi_nuvoton_mono_dai[0];
-	    i2s_node = of_parse_phandle(pdev->dev.of_node,
+		struct device_node *i2s_node;
+		struct snd_soc_dai_link *dai = &snd_rpi_nuvoton_mono_dai[0];
+		i2s_node = of_parse_phandle(pdev->dev.of_node,
 					"i2s-controller", 0);
 
-	    if (i2s_node) {
-		dai->cpu_dai_name = NULL;
-		dai->cpu_of_node = i2s_node;
-		dai->platform_name = NULL;
-		dai->platform_of_node = i2s_node;
-	    }
+		if (i2s_node) {
+			dai->cpu_dai_name = NULL;
+			dai->cpu_of_node = i2s_node;
+			dai->platform_name = NULL;
+			dai->platform_of_node = i2s_node;
+		}
 	}
 
 	ret = snd_soc_register_card(&snd_rpi_nuvoton_mono);
@@ -102,19 +102,19 @@ static int snd_rpi_nuvoton_mono_remove(struct platform_device *pdev)
 }
 
 static const struct of_device_id snd_rpi_nuvoton_mono_of_match[] = {
-	{ .compatible = "nuvoton,nuvoton-dac", },
+	{ .compatible = "nuvoton,nuvoton-mono", },
 	{},
 };
 MODULE_DEVICE_TABLE(of, snd_rpi_nuvoton_mono_of_match);
 
 static struct platform_driver snd_rpi_nuvoton_mono_driver = {
-        .driver = {
-                .name   = "snd-nuvoton-mono",
-                .owner  = THIS_MODULE,
+	.driver = {
+		.name = "snd-rpi-nuvoton-mono",
+		.owner = THIS_MODULE,
 		.of_match_table = snd_rpi_nuvoton_mono_of_match,
-        },
-        .probe          = snd_rpi_nuvoton_mono_probe,
-        .remove         = snd_rpi_nuvoton_mono_remove,
+	},
+	.probe = snd_rpi_nuvoton_mono_probe,
+	.remove = snd_rpi_nuvoton_mono_remove,
 };
 
 module_platform_driver(snd_rpi_nuvoton_mono_driver);
