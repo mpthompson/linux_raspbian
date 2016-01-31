@@ -82,7 +82,7 @@ static const struct reg_default nua8810_reg_defaults[] = {
 	{ 44, 0x0003 },
 	{ 45, 0x0010 },
 	{ 46, 0x0000 },
-	{ 47, 0x0000 },
+	{ 47, 0x0100 },
 	{ 48, 0x0000 },
 	{ 49, 0x0002 },
 	{ 50, 0x0001 },
@@ -92,6 +92,29 @@ static const struct reg_default nua8810_reg_defaults[] = {
 	{ 54, 0x0039 },
 	{ 55, 0x0000 },
 	{ 56, 0x0001 },
+	{ 57, 0x0000 },
+	{ 58, 0x0000 },
+	{ 59, 0x0000 },
+	{ 60, 0x0020 },
+	{ 61, 0x0000 },
+	{ 62, 0x00ef },
+	{ 63, 0x001a },
+	{ 64, 0x00ca },
+	{ 65, 0x0124 },
+	{ 66, 0x0000 },
+	{ 67, 0x0000 },
+	{ 68, 0x0000 },
+	{ 69, 0x0001 },
+	{ 70, 0x0000 },
+	{ 71, 0x0039 },
+	{ 72, 0x0000 },
+	{ 73, 0x0000 },
+	{ 74, 0x0000 },
+	{ 75, 0x0000 },
+	{ 76, 0x0000 },
+	{ 77, 0x0000 },
+	{ 78, 0x0000 },
+	{ 79, 0x0000 },
 };
 
 static bool nua8810_volatile(struct device *dev, unsigned int reg)
@@ -127,34 +150,34 @@ static const struct soc_enum nua8810_enum[] = {
 
 static const struct snd_kcontrol_new nua8810_snd_controls[] = {
 
-SOC_SINGLE("Digital Loopback Switch", NUA8810_COMP, 0, 1, 0),
+SOC_SINGLE("Digital Loopback", NUA8810_COMP, 0, 1, 0),
 
 SOC_ENUM("DAC Companding", nua8810_enum[1]),
 SOC_ENUM("ADC Companding", nua8810_enum[0]),
 
 SOC_ENUM("Playback De-emphasis", nua8810_enum[2]),
-SOC_SINGLE("DAC Inversion Switch", NUA8810_DAC, 0, 1, 0),
+SOC_SINGLE("DAC Inversion", NUA8810_DAC, 0, 1, 0),
 
-SOC_SINGLE("Master Playback Volume", NUA8810_DACVOL, 0, 127, 0),
+SOC_SINGLE("Master Volume", NUA8810_DACVOL, 0, 127, 0),
 
-SOC_SINGLE("High Pass Filter Switch", NUA8810_ADC, 8, 1, 0),
+SOC_SINGLE("High Pass Filter", NUA8810_ADC, 8, 1, 0),
 SOC_SINGLE("High Pass Cut Off", NUA8810_ADC, 4, 7, 0),
-SOC_SINGLE("ADC Inversion Switch", NUA8810_COMP, 0, 1, 0),
+SOC_SINGLE("ADC Inversion", NUA8810_COMP, 0, 1, 0),
 
 SOC_SINGLE("Capture Volume", NUA8810_ADCVOL,  0, 127, 0),
 
-SOC_SINGLE("DAC Playback Limiter Switch", NUA8810_DACLIM1,  8, 1, 0),
+SOC_SINGLE("DAC Playback Limiter", NUA8810_DACLIM1,  8, 1, 0),
 SOC_SINGLE("DAC Playback Limiter Decay", NUA8810_DACLIM1,  4, 15, 0),
 SOC_SINGLE("DAC Playback Limiter Attack", NUA8810_DACLIM1,  0, 15, 0),
 
 SOC_SINGLE("DAC Playback Limiter Threshold", NUA8810_DACLIM2,  4, 7, 0),
 SOC_SINGLE("DAC Playback Limiter Boost", NUA8810_DACLIM2,  0, 15, 0),
 
-SOC_SINGLE("ALC Enable Switch", NUA8810_ALC1,  8, 1, 0),
+SOC_SINGLE("ALC Enable", NUA8810_ALC1,  8, 1, 0),
 SOC_SINGLE("ALC Capture Max Gain", NUA8810_ALC1,  3, 7, 0),
 SOC_SINGLE("ALC Capture Min Gain", NUA8810_ALC1,  0, 7, 0),
 
-SOC_SINGLE("ALC Capture ZC Switch", NUA8810_ALC2,  8, 1, 0),
+SOC_SINGLE("ALC Capture ZC", NUA8810_ALC2,  8, 1, 0),
 SOC_SINGLE("ALC Capture Hold", NUA8810_ALC2,  4, 7, 0),
 SOC_SINGLE("ALC Capture Target", NUA8810_ALC2,  0, 15, 0),
 
@@ -162,45 +185,41 @@ SOC_ENUM("ALC Capture Mode", nua8810_enum[3]),
 SOC_SINGLE("ALC Capture Decay", NUA8810_ALC3,  4, 15, 0),
 SOC_SINGLE("ALC Capture Attack", NUA8810_ALC3,  0, 15, 0),
 
-SOC_SINGLE("ALC Capture Noise Gate Switch", NUA8810_NGATE,  3, 1, 0),
+SOC_SINGLE("ALC Capture Noise Gate", NUA8810_NGATE,  3, 1, 0),
 SOC_SINGLE("ALC Capture Noise Gate Threshold", NUA8810_NGATE,  0, 7, 0),
 
-SOC_SINGLE("Capture PGA ZC Switch", NUA8810_INPPGA,  7, 1, 0),
+SOC_SINGLE("Capture PGA ZC", NUA8810_INPPGA,  7, 1, 0),
 SOC_SINGLE("Capture PGA Volume", NUA8810_INPPGA,  0, 63, 0),
 
-SOC_SINGLE("Speaker Playback ZC Switch", NUA8810_SPKVOL,  7, 1, 0),
-SOC_SINGLE("Speaker Playback Switch", NUA8810_SPKVOL,  6, 1, 1),
-SOC_SINGLE("Speaker Playback Volume", NUA8810_SPKVOL,  0, 63, 0),
+SOC_SINGLE("Speaker ZC", NUA8810_SPKVOL,  7, 1, 0),
+SOC_SINGLE("Speaker Muted", NUA8810_SPKVOL,  6, 1, 0),
+SOC_SINGLE("Speaker Volume", NUA8810_SPKVOL,  0, 63, 0),
 SOC_SINGLE("Speaker Boost", NUA8810_OUTPUT, 2, 1, 0),
 
 SOC_SINGLE("Capture Boost(+20dB)", NUA8810_ADCBOOST,  8, 1, 0),
-SOC_SINGLE("Mono Playback Switch", NUA8810_MONOMIX, 6, 1, 1),
+SOC_SINGLE("Mono Playback Muted", NUA8810_MONOMIX, 6, 1, 0),
 };
 
 /* Speaker Output Mixer */
 static const struct snd_kcontrol_new nua8810_speaker_mixer_controls[] = {
-SOC_DAPM_SINGLE("Line Bypass Switch", NUA8810_SPKMIX, 1, 1, 0),
-SOC_DAPM_SINGLE("Aux Playback Switch", NUA8810_SPKMIX, 5, 1, 0),
-SOC_DAPM_SINGLE("PCM Playback Switch", NUA8810_SPKMIX, 0, 1, 0),
+SOC_DAPM_SINGLE("Bypass", NUA8810_SPKMIX, 1, 1, 0),
+SOC_DAPM_SINGLE("DAC", NUA8810_SPKMIX, 0, 1, 0),
 };
 
 /* Mono Output Mixer */
 static const struct snd_kcontrol_new nua8810_mono_mixer_controls[] = {
-SOC_DAPM_SINGLE("Line Bypass Switch", NUA8810_MONOMIX, 1, 1, 0),
-SOC_DAPM_SINGLE("Aux Playback Switch", NUA8810_MONOMIX, 2, 1, 0),
-SOC_DAPM_SINGLE("PCM Playback Switch", NUA8810_MONOMIX, 0, 1, 0),
+SOC_DAPM_SINGLE("Bypass", NUA8810_MONOMIX, 1, 1, 0),
+SOC_DAPM_SINGLE("DAC", NUA8810_MONOMIX, 0, 1, 0),
 };
 
 static const struct snd_kcontrol_new nua8810_boost_controls[] = {
-SOC_DAPM_SINGLE("Mic PGA Switch", NUA8810_INPPGA,  6, 1, 1),
-SOC_DAPM_SINGLE("Aux Volume", NUA8810_ADCBOOST, 0, 7, 0),
-SOC_DAPM_SINGLE("Mic Volume", NUA8810_ADCBOOST, 4, 7, 0),
+SOC_DAPM_SINGLE("Mic PGA", NUA8810_INPPGA,  6, 1, 1),
+SOC_DAPM_SINGLE("Mic", NUA8810_ADCBOOST, 4, 7, 0),
 };
 
 static const struct snd_kcontrol_new nua8810_micpga_controls[] = {
-SOC_DAPM_SINGLE("MICP Switch", NUA8810_INPUT, 0, 1, 0),
-SOC_DAPM_SINGLE("MICN Switch", NUA8810_INPUT, 1, 1, 0),
-SOC_DAPM_SINGLE("AUX Switch", NUA8810_INPUT, 2, 1, 0),
+SOC_DAPM_SINGLE("MICP", NUA8810_INPUT, 0, 1, 0),
+SOC_DAPM_SINGLE("MICN", NUA8810_INPUT, 1, 1, 0),
 };
 
 static const struct snd_soc_dapm_widget nua8810_dapm_widgets[] = {
@@ -210,13 +229,11 @@ SND_SOC_DAPM_MIXER("Speaker Mixer", NUA8810_POWER3, 2, 0,
 SND_SOC_DAPM_MIXER("Mono Mixer", NUA8810_POWER3, 3, 0,
 	&nua8810_mono_mixer_controls[0],
 	ARRAY_SIZE(nua8810_mono_mixer_controls)),
-SND_SOC_DAPM_DAC("DAC", "HiFi Playback", NUA8810_POWER3, 0, 0),
-SND_SOC_DAPM_ADC("ADC", "HiFi Capture", NUA8810_POWER2, 0, 0),
-SND_SOC_DAPM_PGA("Aux Input", NUA8810_POWER1, 6, 0, NULL, 0),
+SND_SOC_DAPM_DAC("DAC", "Playback", NUA8810_POWER3, 0, 0),
+SND_SOC_DAPM_ADC("ADC", "Capture", NUA8810_POWER2, 0, 0),
 SND_SOC_DAPM_PGA("SpkN Out", NUA8810_POWER3, 5, 0, NULL, 0),
 SND_SOC_DAPM_PGA("SpkP Out", NUA8810_POWER3, 6, 0, NULL, 0),
 SND_SOC_DAPM_PGA("Mono Out", NUA8810_POWER3, 7, 0, NULL, 0),
-
 SND_SOC_DAPM_MIXER("Mic PGA", NUA8810_POWER2, 2, 0,
 		   &nua8810_micpga_controls[0],
 		   ARRAY_SIZE(nua8810_micpga_controls)),
@@ -228,7 +245,6 @@ SND_SOC_DAPM_MICBIAS("Mic Bias", NUA8810_POWER1, 4, 0),
 
 SND_SOC_DAPM_INPUT("MICN"),
 SND_SOC_DAPM_INPUT("MICP"),
-SND_SOC_DAPM_INPUT("AUX"),
 SND_SOC_DAPM_OUTPUT("MONOOUT"),
 SND_SOC_DAPM_OUTPUT("SPKOUTP"),
 SND_SOC_DAPM_OUTPUT("SPKOUTN"),
@@ -236,14 +252,12 @@ SND_SOC_DAPM_OUTPUT("SPKOUTN"),
 
 static const struct snd_soc_dapm_route nua8810_dapm_routes[] = {
 	/* Mono output mixer */
-	{"Mono Mixer", "PCM Playback Switch", "DAC"},
-	{"Mono Mixer", "Aux Playback Switch", "Aux Input"},
-	{"Mono Mixer", "Line Bypass Switch", "Boost Mixer"},
+	{"Mono Mixer", "DAC", "DAC"},
+	{"Mono Mixer", "Bypass", "Boost Mixer"},
 
 	/* Speaker output mixer */
-	{"Speaker Mixer", "PCM Playback Switch", "DAC"},
-	{"Speaker Mixer", "Aux Playback Switch", "Aux Input"},
-	{"Speaker Mixer", "Line Bypass Switch", "Boost Mixer"},
+	{"Speaker Mixer", "DAC", "DAC"},
+	{"Speaker Mixer", "Bypass", "Boost Mixer"},
 
 	/* Outputs */
 	{"Mono Out", NULL, "Mono Mixer"},
@@ -254,14 +268,12 @@ static const struct snd_soc_dapm_route nua8810_dapm_routes[] = {
 	{"SPKOUTP", NULL, "SpkP Out"},
 
 	/* Microphone PGA */
-	{"Mic PGA", "MICN Switch", "MICN"},
-	{"Mic PGA", "MICP Switch", "MICP"},
-	{ "Mic PGA", "AUX Switch", "Aux Input" },
+	{"Mic PGA", "MICN", "MICN"},
+	{"Mic PGA", "MICP", "MICP"},
 
 	/* Boost Mixer */
-	{"Boost Mixer", "Mic PGA Switch", "Mic PGA"},
-	{"Boost Mixer", "Mic Volume", "MICP"},
-	{"Boost Mixer", "Aux Volume", "Aux Input"},
+	{"Boost Mixer", "Mic PGA", "Mic PGA"},
+	{"Boost Mixer", "Mic", "MICP"},
 
 	{"ADC", NULL, "Boost Mixer"},
 };
@@ -633,7 +645,7 @@ MODULE_DEVICE_TABLE(of, nua8810_of_match);
 static const struct regmap_config nua8810_regmap = {
 	.reg_bits = 7,
 	.val_bits = 9,
-	.max_register = NUA8810_MONOMIX,
+	.max_register = NUA8810_OUTCTRL,
 
 	.reg_defaults = nua8810_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(nua8810_reg_defaults),

@@ -25,9 +25,41 @@
 
 #include "../codecs/nua8810.h"
 
+/* Clock rate for MCLK. */
+#define NUVOTON_MONO_MCLK_RATE	12000000UL
+
+static const struct snd_soc_dapm_widget nuvoton_mono_dapm_widgets[] = {
+	SND_SOC_DAPM_MIC("Int Mic", NULL),
+	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+};
+
+static const struct snd_soc_dapm_route nuvoton_mono_audio_map[] = {
+	/* speaker connected to SPKOUT */
+	{"Ext Spk", NULL, "SPKOUTP"},
+	{"Ext Spk", NULL, "SPKOUTN"},
+	{"Mic Bias", NULL, "Int Mic"},
+	{"MICN", NULL, "Mic Bias"},
+	{"MICP", NULL, "Mic Bias"},
+};
+
 static int snd_rpi_nuvoton_mono_init(struct snd_soc_pcm_runtime *rtd)
 {
+	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+
 	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_init()\n");
+
+	/* Add DAPM widgets */
+	snd_soc_dapm_new_controls(dapm, nuvoton_mono_dapm_widgets,
+					ARRAY_SIZE(nuvoton_mono_dapm_widgets));
+
+	/* Setup audio path interconnects */
+	snd_soc_dapm_add_routes(dapm, nuvoton_mono_audio_map,
+					ARRAY_SIZE(nuvoton_mono_audio_map));
+
+	/* Always connected pins */
+	snd_soc_dapm_enable_pin(dapm, "Int Mic");
+	snd_soc_dapm_enable_pin(dapm, "Ext Spk");
+	snd_soc_dapm_sync(dapm);
 
 	return 0;
 }
@@ -35,11 +67,13 @@ static int snd_rpi_nuvoton_mono_init(struct snd_soc_pcm_runtime *rtd)
 static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 					struct snd_pcm_hw_params *params)
 {
+	int ret;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	unsigned int pll_out = 0, bclk = 0, mclk_div = 0;
-	int ret;
+	unsigned int sample_bits =
+		snd_pcm_format_physical_width(params_format(params));
 
 	/* Because the Raspberry Pi doesn't produce MCLK, we're going to 
 	 * let the CODEC be in charge of all the clocks 
@@ -113,7 +147,7 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 	/* Configure CODEC clocks */
 	pr_debug("nuvoton_mono: "
 		 "pll_in = %ld, pll_out = %u, bclk = %x, mclk = %x\n",
-		 12000000l, pll_out, bclk, mclk_div);
+		 NUVOTON_MONO_MCLK_RATE, pll_out, bclk, mclk_div);
 
 	ret = snd_soc_dai_set_clkdiv(codec_dai, NUA8810_BCLKDIV, bclk);
 	if (ret < 0) {
@@ -124,7 +158,7 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, 0,
-					12000000, pll_out);
+					NUVOTON_MONO_MCLK_RATE, pll_out);
 	if (ret < 0) {
 		pr_warning("nuvoton_mono: Failed to set CODEC DAI PLL (%d)\n",
 			   ret);
@@ -140,7 +174,7 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 
 	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params() returning\n");
 
-	return 0;
+	return snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
 }
 
 static int snd_rpi_nuvoton_mono_startup(struct snd_pcm_substream *substream) {
