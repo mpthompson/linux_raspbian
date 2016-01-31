@@ -50,7 +50,7 @@ config SND_BCM2708_SOC_HIFIBERRY_AMP
 config SND_BCM2708_SOC_NUVOTON_MONO
         tristate "Support for Nuvoton Mono DAC"
         depends on SND_BCM2708_SOC_I2S || SND_BCM2835_SOC_I2S
-        select SND_SOC_WM8510
+        select SND_SOC_NUA8810
         help
          Say Y or M if you want to add support for Nuvoton Mono DAC.
 

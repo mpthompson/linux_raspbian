@@ -23,43 +23,11 @@
 #include <sound/soc.h>
 #include <sound/jack.h>
 
-#include "../codecs/wm8510.h"
-
-static const struct snd_soc_dapm_widget nuvoton_mono_dapm_widgets[] = {
-	SND_SOC_DAPM_MIC("Int Mic", NULL),
-	SND_SOC_DAPM_SPK("Ext Spk", NULL),
-};
-
-static const struct snd_soc_dapm_route nuvoton_mono_audio_map[] = {
-	/* speaker connected to SPKOUT */
-	{"Ext Spk", NULL, "SPKOUTP"},
-	{"Ext Spk", NULL, "SPKOUTN"},
-	{"Mic Bias", NULL, "Int Mic"},
-	{"MICN", NULL, "Mic Bias"},
-	{"MICP", NULL, "Mic Bias"},
-};
+#include "../codecs/nua8810.h"
 
 static int snd_rpi_nuvoton_mono_init(struct snd_soc_pcm_runtime *rtd)
 {
-	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-
-	/* Add DAPM widgets */
-	snd_soc_dapm_new_controls(dapm, nuvoton_mono_dapm_widgets, 
-					ARRAY_SIZE(nuvoton_mono_dapm_widgets));
-
-	/* Setup audio path interconnects */
-	snd_soc_dapm_add_routes(dapm, nuvoton_mono_audio_map, 
-					ARRAY_SIZE(nuvoton_mono_audio_map));
-
-	/* Always connected pins */
-	snd_soc_dapm_enable_pin(dapm, "Int Mic");
-	snd_soc_dapm_enable_pin(dapm, "Ext Spk");
-	snd_soc_dapm_sync(dapm);
-
-	/* Make CSB show PLL rate */
-	snd_soc_dai_set_clkdiv(codec_dai, WM8510_OPCLKDIV,
-					WM8510_OPCLKDIV_1 | 4);
+	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_init()\n");
 
 	return 0;
 }
@@ -80,42 +48,44 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 				  SND_SOC_DAIFMT_NB_NF |
 				  SND_SOC_DAIFMT_CBM_CFM);
 
-	/* Figure out PLL and BCLK dividers for WM8510 */
+	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params()\n");
+
+	/* Figure out PLL and BCLK dividers for NUA8810 */
 	switch (params_rate(params)) {
 	case 48000:
 		pll_out = 24576000;
-		mclk_div = WM8510_MCLKDIV_2;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_2;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	case 44100:
 		pll_out = 22579200;
-		mclk_div = WM8510_MCLKDIV_2;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_2;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	case 22050:
 		pll_out = 22579200;
-		mclk_div = WM8510_MCLKDIV_4;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_4;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	case 16000:
 		pll_out = 24576000;
-		mclk_div = WM8510_MCLKDIV_6;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_6;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	case 11025:
 		pll_out = 22579200;
-		mclk_div = WM8510_MCLKDIV_8;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_8;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	case 8000:
 		pll_out = 24576000;
-		mclk_div = WM8510_MCLKDIV_12;
-		bclk = WM8510_BCLKDIV_8;
+		mclk_div = NUA8810_MCLKDIV_12;
+		bclk = NUA8810_BCLKDIV_8;
 		break;
 
 	default:
@@ -145,7 +115,7 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 		 "pll_in = %ld, pll_out = %u, bclk = %x, mclk = %x\n",
 		 12000000l, pll_out, bclk, mclk_div);
 
-	ret = snd_soc_dai_set_clkdiv(codec_dai, WM8510_BCLKDIV, bclk);
+	ret = snd_soc_dai_set_clkdiv(codec_dai, NUA8810_BCLKDIV, bclk);
 	if (ret < 0) {
 		pr_warning
 		    ("nuvoton_mono: Failed to set CODEC DAI BCLKDIV (%d)\n",
@@ -161,19 +131,30 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	ret = snd_soc_dai_set_clkdiv(codec_dai, WM8510_MCLKDIV, mclk_div);
+	ret = snd_soc_dai_set_clkdiv(codec_dai, NUA8810_MCLKDIV, mclk_div);
 	if (ret < 0) {
 		pr_warning("nuvoton_mono: Failed to set CODEC MCLKDIV (%d)\n",
 			   ret);
 		return ret;
 	}
 
+	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params() returning\n");
+
 	return 0;
+}
+
+static int snd_rpi_nuvoton_mono_startup(struct snd_pcm_substream *substream) {
+	return 0;
+}
+
+static void snd_rpi_nuvoton_mono_shutdown(struct snd_pcm_substream *substream) {
 }
 
 /* machine stream operations */
 static struct snd_soc_ops snd_rpi_nuvoton_mono_ops = {
 	.hw_params = snd_rpi_nuvoton_mono_hw_params,
+	.startup = snd_rpi_nuvoton_mono_startup,
+	.shutdown = snd_rpi_nuvoton_mono_shutdown,
 };
 
 static struct snd_soc_dai_link snd_rpi_nuvoton_mono_dai[] = {
@@ -181,11 +162,12 @@ static struct snd_soc_dai_link snd_rpi_nuvoton_mono_dai[] = {
 	.name		= "Nuvoton Mono",
 	.stream_name	= "Nuvoton Mono DAC",
 	.cpu_dai_name	= "bcm2708-i2s.0",
-	.codec_dai_name	= "wm8510-hifi",
+	.codec_dai_name	= "nua8810-hifi",
 	.platform_name	= "bcm2708-i2s.0",
-	.codec_name	= "wm8510.1-001a",
-	.dai_fmt	= SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
-				SND_SOC_DAIFMT_CBS_CFS,
+	.codec_name	= "nua8810.1-001a",
+	.dai_fmt	= SND_SOC_DAIFMT_I2S |
+				SND_SOC_DAIFMT_NB_NF |
+				SND_SOC_DAIFMT_CBM_CFM,
 	.ops		= &snd_rpi_nuvoton_mono_ops,
 	.init		= snd_rpi_nuvoton_mono_init,
 },

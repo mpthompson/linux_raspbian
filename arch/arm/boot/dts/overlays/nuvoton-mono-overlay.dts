@@ -28,9 +28,9 @@
 			#size-cells = <0>;
 			status = "okay";
 
-			wm8510@3b {
+			nua8810@3b {
 				#sound-dai-cells = <0>;
-				compatible = "wlf,wm8510";
+				compatible = "nuvoton,nua8810";
 				reg = <0x1a>;
 				status = "okay";
 			};
