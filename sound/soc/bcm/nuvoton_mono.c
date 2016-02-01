@@ -44,9 +44,9 @@ static const struct snd_soc_dapm_route nuvoton_mono_audio_map[] = {
 
 static int snd_rpi_nuvoton_mono_init(struct snd_soc_pcm_runtime *rtd)
 {
-	struct snd_soc_dapm_context *dapm = &rtd->card->dapm;
+	struct snd_soc_dapm_context *dapm = &rtd->codec->dapm;
 
-	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_init()\n");
+	// printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_init()\n");
 
 	/* Add DAPM widgets */
 	snd_soc_dapm_new_controls(dapm, nuvoton_mono_dapm_widgets,
@@ -82,7 +82,7 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 				  SND_SOC_DAIFMT_NB_NF |
 				  SND_SOC_DAIFMT_CBM_CFM);
 
-	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params()\n");
+	// printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params()\n");
 
 	/* Figure out PLL and BCLK dividers for NUA8810 */
 	switch (params_rate(params)) {
@@ -172,9 +172,9 @@ static int snd_rpi_nuvoton_mono_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params() returning\n");
+	// printk(KERN_ERR "nuvoton_mono: snd_rpi_nuvoton_mono_hw_params() returning\n");
 
-	return snd_soc_dai_set_bclk_ratio(cpu_dai, sample_bits * 2);
+	return 0;
 }
 
 static int snd_rpi_nuvoton_mono_startup(struct snd_pcm_substream *substream) {

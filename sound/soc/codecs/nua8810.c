@@ -332,7 +332,7 @@ static int nua8810_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 reg;
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_pll(%u, %u)\n", freq_in, freq_out);
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_pll(%u, %u)\n", freq_in, freq_out);
 
 	if (freq_in == 0 || freq_out == 0) {
 		/* Clock CODEC directly from MCLK */
@@ -358,7 +358,7 @@ static int nua8810_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	reg = snd_soc_read(codec, NUA8810_CLOCK);
 	snd_soc_write(codec, NUA8810_CLOCK, reg | 0x100);
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_pll() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_pll() returning\n");
 
 	return 0;
 }
@@ -372,7 +372,7 @@ static int nua8810_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 reg;
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_clkdiv(%d, %d)\n", div_id, div);
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_clkdiv(%d, %d)\n", div_id, div);
 
 	switch (div_id) {
 	case NUA8810_OPCLKDIV:
@@ -399,7 +399,7 @@ static int nua8810_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_clkdiv() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_clkdiv() returning\n");
 
 	return 0;
 }
@@ -411,7 +411,7 @@ static int nua8810_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	u16 iface = 0;
 	u16 clk = snd_soc_read(codec, NUA8810_CLOCK) & 0x1fe;
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_fmt()\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_fmt()\n");
 
 	/* set master/slave audio interface */
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
@@ -461,7 +461,7 @@ static int nua8810_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	snd_soc_write(codec, NUA8810_IFACE, iface);
 	snd_soc_write(codec, NUA8810_CLOCK, clk);
 
-	printk(KERN_ERR "nua8810: nua8810_set_dai_fmt() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_dai_fmt() returning\n");
 
 	return 0;
 }
@@ -474,7 +474,7 @@ static int nua8810_pcm_hw_params(struct snd_pcm_substream *substream,
 	u16 iface = snd_soc_read(codec, NUA8810_IFACE) & 0x19f;
 	u16 adn = snd_soc_read(codec, NUA8810_ADD) & 0x1f1;
 
-	printk(KERN_ERR "nua8810: nua8810_pcm_hw_params()\n");
+	// printk(KERN_ERR "nua8810: nua8810_pcm_hw_params()\n");
 
 	/* bit size */
 	switch (params_width(params)) {
@@ -516,7 +516,7 @@ static int nua8810_pcm_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_write(codec, NUA8810_IFACE, iface);
 	snd_soc_write(codec, NUA8810_ADD, adn);
 
-	printk(KERN_ERR "nua8810: nua8810_pcm_hw_params() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_pcm_hw_params() returning\n");
 
 	return 0;
 }
@@ -526,14 +526,14 @@ static int nua8810_mute(struct snd_soc_dai *dai, int mute)
 	struct snd_soc_codec *codec = dai->codec;
 	u16 mute_reg = snd_soc_read(codec, NUA8810_DAC) & 0xffbf;
 
-	printk(KERN_ERR "nua8810: nua8810_mute()\n");
+	// printk(KERN_ERR "nua8810: nua8810_mute()\n");
 
 	if (mute)
 		snd_soc_write(codec, NUA8810_DAC, mute_reg | 0x40);
 	else
 		snd_soc_write(codec, NUA8810_DAC, mute_reg);
 
-	printk(KERN_ERR "nua8810: nua8810_mute() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_mute() returning\n");
 
 	return 0;
 }
@@ -545,12 +545,12 @@ static int nua8810_set_bias_level(struct snd_soc_codec *codec,
 	struct nua8810_priv *nua8810 = snd_soc_codec_get_drvdata(codec);
 	u16 power1 = snd_soc_read(codec, NUA8810_POWER1) & ~0x3;
 
-	printk(KERN_ERR "nua8810: nua8810_set_bias_level()\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_bias_level()\n");
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
-		power1 |= 0x1;  /* VMID 50k */
+		power1 |= 0x1;  /* VREF impedence 80k ohm */
 		snd_soc_write(codec, NUA8810_POWER1, power1);
 		break;
 
@@ -560,12 +560,12 @@ static int nua8810_set_bias_level(struct snd_soc_codec *codec,
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			regcache_sync(nua8810->regmap);
 
-			/* Initial cap charge at VMID 5k */
+			/* Initial cap charge at VREF impedence 3k ohm */
 			snd_soc_write(codec, NUA8810_POWER1, power1 | 0x3);
 			mdelay(100);
 		}
 
-		power1 |= 0x2;  /* VMID 500k */
+		power1 |= 0x2;  /* VREF impedence 300k ohm */
 		snd_soc_write(codec, NUA8810_POWER1, power1);
 		break;
 
@@ -578,7 +578,7 @@ static int nua8810_set_bias_level(struct snd_soc_codec *codec,
 
 	codec->dapm.bias_level = level;
 
-	printk(KERN_ERR "nua8810: nua8810_set_bias_level() returning\n");
+	// printk(KERN_ERR "nua8810: nua8810_set_bias_level() returning\n");
 
 	return 0;
 }
